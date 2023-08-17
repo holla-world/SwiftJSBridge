@@ -5,12 +5,14 @@
 //  Created by hhfa on 2018/6/23.
 //
 
+
 import Foundation
 public let jsbrigeInject = """
 ;(function() {
 if (window.SwiftJSBridge) {
 return;
 }
+
 
 window.SwiftJSBridge = {
 addJSBridge: addJSBridge,
@@ -21,10 +23,12 @@ _callFromSwift: _callFromSwift,
 _callbackFromSwift: _callbackFromSwift
 };
 
+
 var hashValue = "";
 var JSCallSwiftQueue = [];
 var CallFromSwiftHandlers = {};
 var JSResponseCallbacks = {};
+
 
 setTimeout(function() {
 var callbacks = window.SwiftJSBridgeReadyCallbacks;
@@ -34,9 +38,11 @@ callbacks[i](SwiftJSBridge);
 }
 }, 0);
 
+
 function addJSBridge(name, jsBridge) {
 CallFromSwiftHandlers[name] = jsBridge;
 }
+
 
 function callNativeBridge(name, data, callback) {
 if (arguments.length == 2 && typeof data == 'function') {
@@ -49,8 +55,10 @@ callbackID = name + Math.random()
 JSResponseCallbacks[callbackID] = callback;
 }
 
+
 PostSwiftCall({ name:name, data:data, callbackID:callbackID });
 }
+
 
 function PostSwiftCall(message) {
 JSCallSwiftQueue.push(message);
@@ -64,11 +72,13 @@ req.send()
 }
 }
 
+
 function _fetchCommandQueue() {
 var messageQueueString = JSON.stringify(JSCallSwiftQueue);
 JSCallSwiftQueue = [];
 return messageQueueString;
 }
+
 
 function _callFromSwift(messageJSON) {
 var message = JSON.parse(messageJSON)
@@ -79,9 +89,19 @@ PostSwiftCall({ name:message.name, responseID:message.callbackID, data:callbackD
 };
 }
 
+
+var handler = CallFromSwiftHandlers[message.name];
+if (!handler) {
+console.log("SwiftJSBridge: WARNING: no bridge for message from Native:", message);
+} else {
+handler(message.data, responseCallback);
+}
+}
+
+
 function _callbackFromSwift(messageJSON) {
 console.log(messageJSON)
-var message = messageJSON;// JSON.parse(messageJSON)
+var message = messageJSON;
 if (message.responseID) {
 var responseCallback = JSResponseCallbacks[message.responseID];
 if (!responseCallback) {
@@ -92,6 +112,7 @@ responseCallback(msgData);
 delete JSResponseCallbacks[message.responseID];
 }
 }
+
 
 })();
 """
