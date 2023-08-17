@@ -132,7 +132,7 @@ extension SwiftJSBridge {
      public func callbackToJS(callbackID: String, data: [String: String]? = nil) -> Bool {
         let json: ResponseJSON = ResponseJSON()
         json.responseID = callbackID
-        
+
         if let data = data {
             json.data = data
         }
@@ -140,7 +140,6 @@ extension SwiftJSBridge {
         guard let rawdata = try? decoder.encode(json), let jsonString = String(data: rawdata, encoding: .utf8) else {
             return false
         }
-        
-        return webview.evaluate(javascript: "window.SwiftJSBridge._callbackFromSwift(\'\(jsonString)\')")
+        return webview.evaluate(javascript: "window.SwiftJSBridge._callbackFromSwift(\(jsonString))")
     }
 }

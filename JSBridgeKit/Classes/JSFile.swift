@@ -79,22 +79,16 @@ PostSwiftCall({ name:message.name, responseID:message.callbackID, data:callbackD
 };
 }
 
-var handler = CallFromSwiftHandlers[message.name];
-if (!handler) {
-console.log("SwiftJSBridge: WARNING: no bridge for message from Native:", message);
-} else {
-handler(message.data, responseCallback);
-}
-}
-
 function _callbackFromSwift(messageJSON) {
-var message = JSON.parse(messageJSON)
+console.log(messageJSON)
+var message = messageJSON;// JSON.parse(messageJSON)
 if (message.responseID) {
 var responseCallback = JSResponseCallbacks[message.responseID];
 if (!responseCallback) {
 return;
 }
-responseCallback(message.data);
+var msgData = message.data;
+responseCallback(msgData);
 delete JSResponseCallbacks[message.responseID];
 }
 }
