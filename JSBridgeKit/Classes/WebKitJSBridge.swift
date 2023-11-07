@@ -9,7 +9,7 @@ import Foundation
 import WebKit
 
 class WebKitJSBridge: NSObject, WKScriptMessageHandler, WebViewJSBridge {
-    var baseBridge: SwiftJSBridge?
+    weak var baseBridge: SwiftJSBridge?
 
     required init(for webview: WKWebView, with base: SwiftJSBridge) {
         self.webview = webview
